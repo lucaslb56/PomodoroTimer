@@ -1,6 +1,24 @@
+import { useEffect, useState } from "react";
 import { HistoryContainer, HistoryList, Status } from "./styles"
 
+
+interface CycleType {
+    id: string;
+    taskName: string;
+    duration: number;
+    startDate: string;
+    interruptDate?: string;
+    endDate?: string;
+}
+
 export const History = () => {
+    // Variáveis de estado
+    const [cycles, setCycles] = useState<CycleType[]>(() => {
+        const cyclesJSON = localStorage.getItem('cycles');
+        if (cyclesJSON) return JSON.parse(cyclesJSON)
+        else return []
+    });
+
     return (
         <HistoryContainer>
             <h1>Meu histórico</h1>
@@ -15,42 +33,20 @@ export const History = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Conserto de débitos técnicos</td>
-                        <td>25 minutos</td>
-                        <td>Há cerca de 2 meses</td>
-                        <td><Status statusColor="yellow">Em andamento</Status></td>
-                    </tr>
-                    <tr>
-                        <td>Conserto de débitos técnicos</td>
-                        <td>25 minutos</td>
-                        <td>Há cerca de 2 meses</td>
-                        <td><Status statusColor="green">Concluido</Status></td>
-                    </tr>
-                    <tr>
-                        <td>Conserto de débitos técnicos</td>
-                        <td>25 minutos</td>
-                        <td>Há cerca de 2 meses</td>
-                        <td>Em andamento</td>
-                    </tr>
-                    <tr>
-                        <td>Conserto de débitos técnicos</td>
-                        <td>25 minutos</td>
-                        <td>Há cerca de 2 meses</td>
-                        <td>Em andamento</td>
-                    </tr>
-                    <tr>
-                        <td>Conserto de débitos técnicos</td>
-                        <td>25 minutos</td>
-                        <td>Há cerca de 2 meses</td>
-                        <td>Em andamento</td>
-                    </tr>
-                    <tr>
-                        <td>Conserto de débitos técnicos</td>
-                        <td>25 minutos</td>
-                        <td>Há cerca de 2 meses</td>
-                        <td>Em andamento</td>
-                    </tr>
+                    {cycles.map(cycle => {
+                        let status
+                        if (cycle.interruptDate) status = <Status statusColor="red">Interrompido</Status>
+                        else if (cycle.endDate) status = <Status statusColor="green">Concluído</Status> 
+                        else status = <Status statusColor="yellow">Em andamento</Status>
+                        return (
+                            <tr key={cycle.id}>
+                                <td>{cycle.taskName}</td>
+                                <td>{cycle.duration} minutos</td>
+                                <td>{cycle.startDate}</td>
+                                <td>{status}</td>
+                            </tr>
+                        )
+                    })}
                     
                 </tbody>
             </table>

@@ -1,7 +1,6 @@
 import styled from "styled-components";
 
 export const HomeContainer = styled.main`
-    border: 1px solid ${props => props.theme['gray-700']};
     display: flex;
     flex: 1;
     flex-direction: column;

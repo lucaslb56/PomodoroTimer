@@ -3,8 +3,16 @@ import { CountdownContainer, Separetor } from "../../styles"
 import { cycleContext } from "../..";
 
 export const Timer = () => {
-    const [currentSeconds, setCurrentSeconds] = useState<number>(0)
     const { activeCycle, handleFinishActiveCicle } = useContext(cycleContext);
+
+    const [currentSeconds, setCurrentSeconds] = useState<number>(() => {
+        if (activeCycle){
+            const startTime = typeof activeCycle.startDate === 'string' ? new Date(activeCycle.startDate).getTime() : activeCycle.startDate.getTime()
+            const AmountSeconds = Math.floor((new Date().getTime() - new Date(activeCycle.startDate).getTime()) / 1000)
+            const durationSeconds = activeCycle.duration * 60
+            return durationSeconds - AmountSeconds
+        } else return 0
+    })
 
     // Inicializa timer 
     useEffect(()=>{
@@ -25,11 +33,11 @@ export const Timer = () => {
         let timerControl: number
 
         if (activeCycle) {
-            timerControl = setInterval(() => {
+            timerControl = setInterval(() => { 
                 const AmountSeconds = Math.floor((new Date().getTime() - activeCycle.startDate.getTime()) / 1000)
                 const durationSeconds = activeCycle.duration * 60
                 setCurrentSeconds(durationSeconds - AmountSeconds)
-
+                console.log(AmountSeconds)
                 if (AmountSeconds === durationSeconds) {
                     clearInterval(timerControl)
                     handleFinishActiveCicle()
@@ -38,7 +46,9 @@ export const Timer = () => {
             }, 1000);
         }
 
-        return () => clearInterval(timerControl)
+        return () => {
+            if (!activeCycle) clearInterval(timerControl);
+        }
 
     }, [activeCycle, handleFinishActiveCicle]);
 
